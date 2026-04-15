@@ -1,0 +1,263 @@
+.product-card {
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* Badge remise */
+.discount-badge {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+  color: white;
+  padding: 5px 12px;
+  border-radius: 25px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  z-index: 2;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* Image section */
+.product-image {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.image-placeholder {
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.product-emoji {
+  font-size: 4rem;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Product info */
+.product-info {
+  padding: 1.5rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* 1. Product name en uppercase */
+.product-name {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #2d3748;
+  margin: 0;
+  letter-spacing: -0.3px;
+  line-height: 1.3;
+}
+
+.product-brand {
+  color: #718096;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Price section */
+.price-section {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin: 0.5rem 0;
+}
+
+.current-price {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #2c5282;
+}
+
+.original-price {
+  color: #a0aec0;
+  font-size: 1rem;
+}
+
+.original-price s {
+  text-decoration: line-through;
+}
+
+.discount-percent {
+  background: #fed7d7;
+  color: #c53030;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+/* Stock status - 4. Pipe personnalisé avec styles */
+.stock-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin: 0.5rem 0;
+}
+
+.stock-status.in-stock {
+  background: #c6f6d5;
+  color: #22543d;
+}
+
+.stock-status.limited-stock {
+  background: #feebc8;
+  color: #7c2d12;
+}
+
+.stock-status.out-stock {
+  background: #fed7d7;
+  color: #742a2a;
+}
+
+.stock-icon {
+  font-size: 1rem;
+}
+
+.stock-count {
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+/* Rating */
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.stars {
+  color: #f6ad55;
+  font-weight: 600;
+}
+
+.review-count {
+  color: #a0aec0;
+  font-size: 0.75rem;
+}
+
+/* Description */
+.description {
+  color: #4a5568;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  margin: 0.5rem 0;
+}
+
+/* Tags */
+.tags {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin: 0.5rem 0;
+}
+
+.tag {
+  background: #edf2f7;
+  color: #4a5568;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.tag:hover {
+  background: #cbd5e0;
+  transform: scale(1.05);
+}
+
+/* Bouton */
+.add-to-cart-btn {
+  margin-top: auto;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.add-to-cart-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.add-to-cart-btn:disabled {
+  background: #cbd5e0;
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .product-card {
+    border-radius: 15px;
+  }
+  
+  .product-info {
+    padding: 1rem;
+  }
+  
+  .current-price {
+    font-size: 1.3rem;
+  }
+  
+  .product-name {
+    font-size: 1rem;
+  }
+}

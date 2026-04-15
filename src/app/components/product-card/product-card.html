@@ -1,0 +1,60 @@
+<div class="product-card">
+  <!-- Badge remise si applicable -->
+  <div class="discount-badge" *ngIf="product.originalPrice && product.originalPrice > product.price">
+    -{{ product.price | discount:product.originalPrice }}%
+  </div>
+  
+  <div class="product-image">
+    <div class="image-placeholder">
+      <span class="product-emoji">📦</span>
+    </div>
+  </div>
+  
+  <div class="product-info">
+    <!-- 1. product.name en uppercase -->
+    <h3 class="product-name">{{ product.name | uppercase }}</h3>
+    
+    <div class="product-brand">{{ product.brand }}</div>
+    
+    <div class="price-section">
+      <!-- 2. product.price avec currency:'EUR' -->
+      <span class="current-price">{{ product.price | currency:'EUR':'symbol':'1.2-2' }}</span>
+      
+      <!-- 3. Si originalPrice existe, affichage barré et remise -->
+      <span *ngIf="product.originalPrice && product.originalPrice > product.price" class="original-price">
+        <s>{{ product.originalPrice | currency:'EUR':'symbol':'1.2-2' }}</s>
+      </span>
+      
+      <!-- Affichage de la remise avec percent pipe -->
+      <span *ngIf="product.originalPrice && product.originalPrice > product.price" class="discount-percent">
+        -{{ ((product.originalPrice - product.price) / product.originalPrice) | percent:'1.0-0' }}
+      </span>
+    </div>
+    
+    <!-- 4. Stock status avec pipe personnalisé -->
+    <div class="stock-status" [class]="getStockStatusClass(product.stock)">
+      <span class="stock-icon">
+        {{ product.stock > 10 ? '✅' : product.stock > 0 ? '⚠️' : '❌' }}
+      </span>
+      <span class="stock-text">{{ product.stock | stockStatus }}</span>
+      <span class="stock-count" *ngIf="product.stock > 0 && product.stock <= 10">
+        ({{ product.stock }} restants)
+      </span>
+    </div>
+    
+    <div class="rating">
+      <span class="stars">⭐ {{ product.rating }}/5</span>
+      <span class="review-count">({{ product.reviewCount }} avis)</span>
+    </div>
+    
+    <p class="description">{{ product.description }}</p>
+    
+    <div class="tags">
+      <span class="tag" *ngFor="let tag of product.tags.slice(0, 3)">{{ tag }}</span>
+    </div>
+    
+    <button class="add-to-cart-btn" [disabled]="product.stock === 0">
+      {{ product.stock === 0 ? 'Indisponible' : 'Ajouter au panier' }}
+    </button>
+  </div>
+</div>

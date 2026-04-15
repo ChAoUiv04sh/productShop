@@ -1,0 +1,71 @@
+<div class="filter-container">
+  <h2>🔍 Filtres produits</h2>
+
+  <!-- Search input - updates on each keystroke via (input) event -->
+  <div class="form-group">
+    <label for="searchInput">Recherche</label>
+    <input
+      id="searchInput"
+      type="text"
+      class="search-input"
+      [(ngModel)]="searchText"
+      (input)="onSearchChange()"
+      [style.borderColor]="searchBorderColor"
+      placeholder="Nom du produit..."
+    />
+    <small *ngIf="searchText" class="active-search">● recherche active</small>
+  </div>
+
+  <!-- Category select - updates on change -->
+  <div class="form-group">
+    <label for="categorySelect">Catégorie</label>
+    <select id="categorySelect" [(ngModel)]="selectedCategory" (change)="onCategoryChange()">
+      <option *ngFor="let cat of categories" [value]="cat">
+        {{ cat | titlecase }}
+      </option>
+    </select>
+  </div>
+
+  <!-- Price range - updates as you slide -->
+  <div class="form-group">
+    <label for="priceRange">Prix maximum : <strong>{{ maxPrice | currency:'EUR' }}</strong></label>
+    <div class="range-wrapper">
+      <input
+        id="priceRange"
+        type="range"
+        min="0"
+        max="2000"
+        step="50"
+        [(ngModel)]="maxPrice"
+        (input)="onPriceChange()"
+      />
+      <span class="price-display">{{ maxPrice | currency:'EUR' }}</span>
+    </div>
+    <small class="hint">Glissez le curseur (0 € - 2000 €, pas de 50 €)</small>
+  </div>
+
+  <!-- Buttons -->
+  <div class="button-group">
+    <button 
+      class="btn btn-primary" 
+      (click)="applyFilter()" 
+      [disabled]="isFilterDisabled">
+      Filtrer
+    </button>
+    
+    <button class="btn btn-secondary" (click)="resetFilters()">
+      Réinitialiser
+    </button>
+  </div>
+
+  <!-- Filter status indicator -->
+  <div class="filter-status" [class.active]="!isFilterDisabled">
+    <span *ngIf="isFilterDisabled">📋 Aucun filtre actif</span>
+    <span *ngIf="!isFilterDisabled">
+      ⚡ Filtres actifs : 
+      <span *ngIf="searchText">"{{ searchText }}"</span>
+      <span *ngIf="selectedCategory !== 'toutes'">{{ selectedCategory }}</span>
+      <span *ngIf="maxPrice > 0 && maxPrice < 2000">≤ {{ maxPrice }}€</span>
+    </span>
+  </div>
+</div>
