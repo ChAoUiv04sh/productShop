@@ -1,25 +1,17 @@
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { Product, CartItem, ProductCategory } from './models/product.model';
+import { Component, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ProductFilter } from './components/product-filter/product-filter';
-import { ProductCard } from './components/product-card/product-card';
+import { Product, CartItem, ProductCategory } from './models/product.model';
+import { ProductFilter } from '../app/components/product-filter/product-filter';
+import { ProductList} from './components/product-list/product-list';
 
 @Component({
   selector: 'app-root',
-  imports: [FormsModule, CommonModule, ProductFilter, ProductCard],
+  standalone: true,
+  imports: [CommonModule, ProductFilter, ProductList],
   templateUrl: './app.html',
-  styleUrl: './app.css'
+  styleUrls: ['./app.css']
 })
-export class App {
-  title = 'ProductsShop';
-  today = new Date();
-  
-  // Filter properties
-  searchText: string = '';
-  selectedCategory: string = 'toutes';
-  maxPrice: number = 2000;
-  
+export class AppComponent {
   products: Product[] = [
     {
       id: 1,
@@ -31,114 +23,128 @@ export class App {
       stock: 15,
       rating: 4.6,
       reviewCount: 342,
-      description: 'Le dernier flagship avec 5G.',
-      tags: ['5G', 'OLED', '128Go', 'NFC', 'Rapide']
+      description: 'Le dernier flagship avec 5G, écran OLED 120Hz et charge rapide 65W.',
+      tags: ['5G', 'OLED', '128Go', 'NFC', 'Rapide'],
+      imageUrl: 'https://picsum.photos/id/0/300/200'
     },
     {
       id: 2,
-      name: 'T-Shirt Sport',
-      brand: 'Nike',
-      category: ProductCategory.VETEMENT,
-      price: 29,
-      stock: 50,
-      rating: 4.2,
-      reviewCount: 120,
-      description: 'T-shirt confortable pour sport.',
-      tags: ['sport', 'cotton']
+      name: 'Casque Audio Sans Fil',
+      brand: 'SoundMaster',
+      category: ProductCategory.ELECTRONIQUE,
+      price: 89,
+      originalPrice: 129,
+      stock: 8,
+      rating: 4.3,
+      reviewCount: 156,
+      description: 'Casque Bluetooth avec réduction de bruit active.',
+      tags: ['Bluetooth', 'ANC', 'Batterie 20h'],
+      imageUrl: 'https://picsum.photos/id/1/300/200'
     },
     {
       id: 3,
-      name: 'Aspirateur Pro',
-      brand: 'HomeClean',
-      category: ProductCategory.MAISON,
-      price: 199,
-      stock: 8,
-      rating: 4.1,
-      reviewCount: 87,
-      description: 'Nettoyage puissant.',
-      tags: ['clean', 'home']
+      name: 'T-shirt Coton Bio',
+      brand: 'EcoWear',
+      category: ProductCategory.VETEMENT,
+      price: 29,
+      stock: 25,
+      rating: 4.5,
+      reviewCount: 89,
+      description: 'T-shirt en coton biologique, certifié éco-responsable.',
+      tags: ['Bio', 'Coton', 'Confortable'],
+      imageUrl: 'https://picsum.photos/id/20/300/200'
     },
     {
       id: 4,
-      name: 'Chaussures Running',
-      brand: 'Adidas',
-      category: ProductCategory.SPORT,
-      price: 120,
-      originalPrice: 150,
-      stock: 0,
+      name: 'Lampe LED Connectée',
+      brand: 'HomeSmart',
+      category: ProductCategory.MAISON,
+      price: 45,
+      originalPrice: 69,
+      stock: 3,
       rating: 4.7,
-      reviewCount: 400,
-      description: 'Confort pour course.',
-      tags: ['run', 'light']
+      reviewCount: 210,
+      description: 'Lampe intelligente RGB compatible Alexa et Google Home.',
+      tags: ['LED', 'WiFi', 'RGB', 'Smart'],
+      imageUrl: 'https://picsum.photos/id/26/300/200'
     },
     {
       id: 5,
-      name: 'Laptop Ultra',
-      brand: 'Dell',
-      category: ProductCategory.ELECTRONIQUE,
-      price: 1299,
-      stock: 5,
-      rating: 4.8,
-      reviewCount: 220,
-      description: 'Performance haute gamme.',
-      tags: ['ssd', '16gb', 'fast']
+      name: 'Chaussures de Running',
+      brand: 'SportFlex',
+      category: ProductCategory.SPORT,
+      price: 120,
+      stock: 0,
+      rating: 4.4,
+      reviewCount: 312,
+      description: 'Chaussures légères avec amorti réactif.',
+      tags: ['Running', 'Amorti', 'Léger'],
+      imageUrl: 'https://picsum.photos/id/0/300/200'
     }
   ];
 
+  // Filters
+  searchText = signal('');
+  selectedCategory = signal<string>('toutes');
+  maxPrice = signal(2000);
+  
+  // Selection and cart
   selectedProduct: Product | null = null;
   cart: CartItem[] = [];
 
-  get cartTotal(): number {
-    return this.cart.reduce((total, item) =>
-      total + item.product.price * item.quantity, 0
-    );
-  }
-
-  // Computed property for filtered products - THIS SHOWS ON THE PAGE
+  // Computed filtered products
   get filteredProducts(): Product[] {
-    return this.products.filter(product => {
-      // Filter by search text
-      const matchesSearch = this.searchText === '' || 
-        product.name.toLowerCase().includes(this.searchText.toLowerCase()) ||
-        product.brand.toLowerCase().includes(this.searchText.toLowerCase());
-      
-      // Filter by category
-      let productCategory = '';
-      switch(product.category) {
-        case ProductCategory.ELECTRONIQUE:
-          productCategory = 'Électronique';
-          break;
-        case ProductCategory.VETEMENT:
-          productCategory = 'Mode';
-          break;
-        case ProductCategory.MAISON:
-          productCategory = 'Maison';
-          break;
-        case ProductCategory.SPORT:
-          productCategory = 'Sport';
-          break;
-      }
-      const matchesCategory = this.selectedCategory === 'toutes' || 
-        productCategory === this.selectedCategory;
-      
-      // Filter by max price
-      const matchesPrice = product.price <= this.maxPrice;
-      
-      return matchesSearch && matchesCategory && matchesPrice;
-    });
+    let filtered = [...this.products];
+    
+    // Filter by searchText (name or brand, case insensitive)
+    const search = this.searchText().toLowerCase().trim();
+    if (search) {
+      filtered = filtered.filter(product => 
+        product.name.toLowerCase().includes(search) || 
+        product.brand.toLowerCase().includes(search)
+      );
+    }
+    
+    // Filter by selectedCategory
+    const category = this.selectedCategory();
+    if (category !== 'toutes') {
+      filtered = filtered.filter(product => product.category === category);
+    }
+    
+    // Filter by maxPrice
+    filtered = filtered.filter(product => product.price <= this.maxPrice());
+    
+    return filtered;
   }
 
-  // This method receives the filter values from the child component
-  onFilterChanged(filters: { searchText: string; selectedCategory: string; maxPrice: number }) {
-    this.searchText = filters.searchText;
-    this.selectedCategory = filters.selectedCategory;
-    this.maxPrice = filters.maxPrice;
+  // Getter for cart total
+  get cartTotal(): number {
+    return this.cart.reduce((total, item) => total + (item.product.price * item.quantity), 0);
   }
 
-  // Helper method to reset all filters from the parent
-  resetAllFilters(): void {
-    this.searchText = '';
-    this.selectedCategory = 'toutes';
-    this.maxPrice = 2000;
+  // Getter for today's date
+  get today(): Date {
+    return new Date();
+  }
+
+  // Event handlers
+  onProductSelected(product: Product): void {
+    this.selectedProduct = product;
+  }
+
+  onAddToCart(product: Product): void {
+    const existingItem = this.cart.find(item => item.product.id === product.id);
+    if (existingItem) {
+      existingItem.quantity++;
+    } else {
+      this.cart.push({ product, quantity: 1 });
+    }
+  }
+
+  // Update filters from child component
+  updateFilters(filters: { searchText: string; selectedCategory: string; maxPrice: number }): void {
+    this.searchText.set(filters.searchText);
+    this.selectedCategory.set(filters.selectedCategory);
+    this.maxPrice.set(filters.maxPrice);
   }
 }

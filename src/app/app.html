@@ -1,82 +1,29 @@
-<div class="shop-dashboard">
-  <!-- Header Section -->
-  <div class="dashboard-header">
-    <div class="header-badge">
-      <span class="badge-icon">🛍️</span>
-      <h1 class="shop-title">{{ title }}</h1>
-    </div>
-    <div class="date-badge">
-      <span class="date-icon">📅</span>
-      <span class="date-text">{{ today | date:'dd/MM/yyyy' }}</span>
-    </div>
-  </div>
-
-  <!-- Stats Cards Grid -->
-  <div class="stats-grid">
-    <!-- Products Count Card -->
-    <div class="stat-card products-card">
-      <div class="stat-icon">📦</div>
-      <div class="stat-content">
-        <p class="stat-label">Nombre de produits</p>
-        <p class="stat-value">{{ filteredProducts.length | number }}</p>
-      </div>
-      <div class="stat-trend">Disponibles</div>
-    </div>
-
-    <!-- Cart Total Card -->
-    <div class="stat-card cart-card">
-      <div class="stat-icon">🛒</div>
-      <div class="stat-content">
-        <p class="stat-label">Total panier</p>
-        <p class="stat-value">{{ cartTotal | currency:'EUR':'symbol':'1.2-2' }}</p>
-      </div>
-      <div class="stat-trend">{{ cart.length }} articles</div>
+<div class="container mt-4">
+  <!-- Header -->
+  <div class="header mb-4">
+    <h1>{{ 'ProductsShop' }}</h1>
+    <div class="stats">
+      <p>Nombre de produits: {{ products.length | number }}</p>
+      <p>Total panier: {{ cartTotal | currency:'EUR':'symbol':'1.2-2' }}</p>
+      <p>Date: {{ today | date:'dd/MM/yyyy' }}</p>
     </div>
   </div>
 
   <!-- Product Filter Component -->
-  <app-product-filter (filterChanged)="onFilterChanged($event)"></app-product-filter>
+  <app-product-filter 
+    (filtersChanged)="updateFilters($event)"
+  />
 
-  <!-- Selected Product Debug Section -->
-  <div class="debug-section" *ngIf="selectedProduct; else noProduct">
-    <div class="debug-header">
-      <span class="debug-icon">🔍</span>
-      <h3>Produit sélectionné - Détails</h3>
-      <span class="debug-badge">JSON</span>
-    </div>
-    <div class="debug-content">
-      <pre class="json-pretty">{{ selectedProduct | json }}</pre>
-    </div>
-  </div>
+  <!-- Product List Component -->
+  <app-product-list 
+    [products]="filteredProducts" 
+    [selectedId]="selectedProduct?.id ?? null"
+    (productSelected)="onProductSelected($event)"
+    (addedToCart)="onAddToCart($event)"
+  />
 
-  <ng-template #noProduct>
-    <div class="info-message">
-      <span class="info-icon">ℹ️</span>
-      <p>Aucun produit sélectionné. Cliquez sur un produit pour voir ses détails en JSON.</p>
-    </div>
-  </ng-template>
-
-  <!-- Products Grid - THIS IS WHERE FILTERED PRODUCTS ARE DISPLAYED -->
-  <div class="products-section">
-    <div class="section-header">
-      <h3>📋 Catalogue produits</h3>
-      <span class="product-count">{{ filteredProducts.length }} références</span>
-    </div>
-    
-    <!-- Message when no products match filters -->
-    <div *ngIf="filteredProducts.length === 0" class="no-results">
-      <span class="no-results-icon">🔍</span>
-      <p>Aucun produit ne correspond à vos critères de recherche.</p>
-      <button class="btn btn-secondary" (click)="resetAllFilters()">Réinitialiser les filtres</button>
-    </div>
-
-    <!-- Products Grid - filteredProducts updates in real-time -->
-    <div class="products-grid">
-      <app-product-card 
-        *ngFor="let product of filteredProducts" 
-        [product]="product"
-        (click)="selectedProduct = product">
-      </app-product-card>
-    </div>
-  </div>
+  <!-- Debug section -->
+  <pre class="debug mt-4 p-3 bg-light border rounded">
+    {{ selectedProduct | json }}
+  </pre>
 </div>

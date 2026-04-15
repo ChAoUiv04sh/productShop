@@ -1,60 +1,62 @@
-<div class="product-card">
-  <!-- Badge remise si applicable -->
-  <div class="discount-badge" *ngIf="product.originalPrice && product.originalPrice > product.price">
-    -{{ product.price | discount:product.originalPrice }}%
-  </div>
-  
-  <div class="product-image">
-    <div class="image-placeholder">
-      <span class="product-emoji">📦</span>
+<div class="card h-100 product-card" (click)="onCardClick($event)">
+  <!-- Image or placeholder -->
+  @if (product.imageUrl) {
+    <img [src]="product.imageUrl" class="card-img-top" [alt]="product.name">
+  } @else {
+    <div class="placeholder-image">
+      <i class="bi bi-image"></i>
+      <p>Pas d'image</p>
     </div>
-  </div>
+  }
   
-  <div class="product-info">
-    <!-- 1. product.name en uppercase -->
-    <h3 class="product-name">{{ product.name | uppercase }}</h3>
+  <div class="card-body">
+    <h5 class="card-title">{{ product.name | uppercase }}</h5>
+    <p class="brand text-muted">{{ product.brand }}</p>
+    <p class="card-text">{{ product.description | slice:0:80 }}...</p>
     
-    <div class="product-brand">{{ product.brand }}</div>
-    
+    <!-- Price section -->
     <div class="price-section">
-      <!-- 2. product.price avec currency:'EUR' -->
-      <span class="current-price">{{ product.price | currency:'EUR':'symbol':'1.2-2' }}</span>
-      
-      <!-- 3. Si originalPrice existe, affichage barré et remise -->
-      <span *ngIf="product.originalPrice && product.originalPrice > product.price" class="original-price">
-        <s>{{ product.originalPrice | currency:'EUR':'symbol':'1.2-2' }}</s>
-      </span>
-      
-      <!-- Affichage de la remise avec percent pipe -->
-      <span *ngIf="product.originalPrice && product.originalPrice > product.price" class="discount-percent">
-        -{{ ((product.originalPrice - product.price) / product.originalPrice) | percent:'1.0-0' }}
-      </span>
+      @if (product.originalPrice) {
+        <div class="discount-badge">
+          -{{ product.price | discount:product.originalPrice }}%
+        </div>
+        <span class="original-price">{{ product.originalPrice | currency:'EUR' }}</span>
+      }
+      <span class="current-price">{{ product.price | currency:'EUR' }}</span>
     </div>
     
-    <!-- 4. Stock status avec pipe personnalisé -->
-    <div class="stock-status" [class]="getStockStatusClass(product.stock)">
-      <span class="stock-icon">
-        {{ product.stock > 10 ? '✅' : product.stock > 0 ? '⚠️' : '❌' }}
-      </span>
-      <span class="stock-text">{{ product.stock | stockStatus }}</span>
-      <span class="stock-count" *ngIf="product.stock > 0 && product.stock <= 10">
-        ({{ product.stock }} restants)
+    <!-- Stock status -->
+    <div class="stock-status mt-2">
+      <span [class]="'badge ' + getStockClass(product.stock)">
+        {{ product.stock | stockStatus }}
       </span>
     </div>
     
-    <div class="rating">
-      <span class="stars">⭐ {{ product.rating }}/5</span>
-      <span class="review-count">({{ product.reviewCount }} avis)</span>
+    <!-- Rating -->
+    <div class="rating mt-2">
+      @for (star of getStars(product.rating); track $index) {
+        <i [class]="'bi ' + star + ' text-warning'"></i>
+      }
+      <span class="ms-2 text-muted">({{ product.reviewCount }})</span>
     </div>
     
-    <p class="description">{{ product.description }}</p>
-    
-    <div class="tags">
-      <span class="tag" *ngFor="let tag of product.tags.slice(0, 3)">{{ tag }}</span>
+    <!-- Tags -->
+    <div class="tags mt-2">
+      @for (tag of product.tags.slice(0,3); track $index) {
+        <span class="badge bg-secondary me-1">{{ tag }}</span>
+      }
     </div>
-    
-    <button class="add-to-cart-btn" [disabled]="product.stock === 0">
-      {{ product.stock === 0 ? 'Indisponible' : 'Ajouter au panier' }}
-    </button>
+  </div>
+  
+  <div class="card-footer bg-transparent">
+    @if (product.stock === 0) {
+      <button class="btn btn-danger w-100" disabled>
+        Rupture de stock
+      </button>
+    } @else {
+      <button class="btn btn-primary w-100 add-to-cart-btn" (click)="onAddToCart($event)">
+        <i class="bi bi-cart-plus"></i> Ajouter au panier
+      </button>
+    }
   </div>
 </div>

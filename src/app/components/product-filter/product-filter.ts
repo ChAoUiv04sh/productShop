@@ -1,47 +1,30 @@
+import { Component, Output, EventEmitter, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Component, Output, EventEmitter } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { ProductCategory } from '../../models/product.model';
 
 @Component({
   selector: 'app-product-filter',
-  imports: [FormsModule, CommonModule],
+  standalone: true,
+  imports: [CommonModule, FormsModule],
   templateUrl: './product-filter.html',
-  styleUrl: './product-filter.css',
+  styleUrls: ['./product-filter.css']
 })
-export class ProductFilter {
-  searchText: string = '';
-  selectedCategory: string = 'toutes';
-  maxPrice: number = 2000;
+export class ProductFilter{
+  @Output() filtersChanged = new EventEmitter<{ searchText: string; selectedCategory: string; maxPrice: number }>();
 
-  categories: string[] = ['toutes', 'Électronique', 'Mode', 'Maison', 'Sport', 'Livres'];
+  searchText = '';
+  selectedCategory = 'toutes';
+  maxPrice = 2000;
 
-  @Output() filterChanged = new EventEmitter<{searchText: string, selectedCategory: string, maxPrice: number}>();
+  categories = ['toutes', ...Object.values(ProductCategory)];
 
-  get searchBorderColor(): string {
-    return this.searchText && this.searchText.trim() !== '' ? '#22c55e' : '#d1d5db';
+  get isFormEmpty(): boolean {
+    return !this.searchText && this.selectedCategory === 'toutes' && this.maxPrice === 2000;
   }
 
-  get isFilterDisabled(): boolean {
-    return this.searchText === '' && 
-           this.selectedCategory === 'toutes' && 
-           this.maxPrice === 2000;
-  }
-
-  // Add these missing methods
-  onSearchChange(): void {
-    this.emitFilters();
-  }
-
-  onCategoryChange(): void {
-    this.emitFilters();
-  }
-
-  onPriceChange(): void {
-    this.emitFilters();
-  }
-
-  private emitFilters(): void {
-    this.filterChanged.emit({
+  applyFilters(): void {
+    this.filtersChanged.emit({
       searchText: this.searchText,
       selectedCategory: this.selectedCategory,
       maxPrice: this.maxPrice
@@ -52,13 +35,6 @@ export class ProductFilter {
     this.searchText = '';
     this.selectedCategory = 'toutes';
     this.maxPrice = 2000;
-    this.emitFilters();
-  }
-
-  applyFilter(): void {
-    if (!this.isFilterDisabled) {
-      this.emitFilters();
-      alert(`✅ Filtres appliqués :\n- Recherche : "${this.searchText || '(vide)'}"\n- Catégorie : ${this.selectedCategory}\n- Prix max : ${this.maxPrice} €`);
-    }
+    this.applyFilters();
   }
 }

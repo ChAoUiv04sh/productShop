@@ -1,34 +1,16 @@
-<div class="products-container">
+<div class="products-grid">
   @for (product of products; track product.id) {
-    <div class="product-card">
-      <!-- Image section -->
-      @if (product.imageUrl) {
-        <div class="product-image">
-          <img [src]="product.imageUrl" [alt]="product.name">
-        </div>
-      } @else {
-        <div class="placeholder-image">
-          📷 Pas d'image
-        </div>
-      }
-      
-      <!-- Product info -->
-      <div class="product-info">
-        <h3>{{ product.name }}</h3>
-        <p class="price">{{ product.price | currency:'EUR' }}</p>
-        <p class="stock">Stock: {{ product.stock }}</p>
-        
-        <!-- Stock status and button -->
-        @if (product.stock === 0) {
-          <p class="out-of-stock">Rupture</p>
-        } @else {
-          <button class="add-button">Ajouter</button>
-        }
-      </div>
+    <div class="product-item" [class.selected]="product.id === selectedId">
+      <app-product-card 
+        [product]="product"
+        (productClick)="onProductSelected($event)"
+        (addToCart)="onAddToCart($event)"
+      />
     </div>
   } @empty {
-    <div class="empty-message">
-      <p>Aucun produit correspond à votre recherche.</p>
+    <div class="empty-state">
+      <i class="bi bi-inbox display-1"></i>
+      <p class="mt-3">Aucun produit correspond à votre recherche.</p>
     </div>
   }
 </div>
